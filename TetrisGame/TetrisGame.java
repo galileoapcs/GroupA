@@ -1,6 +1,10 @@
 //TetrisGame.java
 import info.gridworld.actor.*;
 import info.gridworld.grid.*;
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/Stuff
 import java.util.ArrayList;
 import java.awt.Color;
 /**
@@ -70,6 +74,7 @@ public class TetrisGame {
 	public static void nextTetrisBlock() {
 
 		removeCompleteRows();
+<<<<<<< HEAD
 		TetrisBlock randomBlock = new TetrisBlock();//default 2block piece
 		//choose random block
 		int randNum = (int)(Math.random()*7)+1;//random number between 1 and 7
@@ -87,6 +92,25 @@ public class TetrisGame {
 		// randomBlock = new TetrisBlockZ();
 		//if(randNum == 7)
 		// randomBlock = new TetrisBlock_Z();
+=======
+		TetrisBlock randomBlock = null;//default 2block piece
+		//choose random block
+		int randNum = (int)(Math.random()*7)+1;//random number between 1 and 7
+		if(randNum == 1)
+		 randomBlock = new TetrisBlockO();
+		if(randNum == 2)
+		 randomBlock = new TetrisBlockI();
+		if(randNum == 3)
+		 randomBlock = new TetrisBlockT();
+		if(randNum == 4)
+		 randomBlock = new TetrisBlockL();
+		if(randNum == 5)
+		 randomBlock = new TetrisBlock_L();
+		if(randNum == 6)
+		 randomBlock = new TetrisBlockZ();
+		if(randNum == 7)
+		 randomBlock = new TetrisBlock_Z();
+>>>>>>> origin/Stuff
 
 		currentBlock = randomBlock;
 	}
@@ -96,14 +120,65 @@ public class TetrisGame {
 	 * and ask each actor located above the just deleted row to act and
 	 * update the score++
 	 */
+<<<<<<< HEAD
 	public static void removeCompleteRows() {
 		Grid<Actor> gr = world.getGrid();
+=======
+	private static boolean isFullRow(int i)
+	{
+		Grid<Actor> gr = world.getGrid();
+		for(int z=1;z<11;z++)
+		{
+			if (gr.get(new Location(i, z))==null)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static void removeCompleteRows() {
+		Grid<Actor> gr = world.getGrid();
+		for(int i=18;i>0;i--)
+		{
+			if(isFullRow(i))
+			{
+				for(int z=1;z<11;z++)
+				{
+					gr.remove(new Location(i,z));
+				}
+				score++;
+				for (int a=17;a>0;a--)
+				{
+					for (int c=1;c<11;c++)
+					{
+						if(gr.get(new Location(a,c))!=null)
+						{
+							gr.get(new Location(a,c)).moveTo(new Location(a+1,c));
+						}	
+					}
+				}
+				
+			i++;
+		}
+		
+
+>>>>>>> origin/Stuff
 
 		//Your code goes here ... see Question 2
 		
 
 	}
+<<<<<<< HEAD
 	
 
 
 }
+=======
+		
+	}
+}
+	
+
+
+>>>>>>> origin/Stuff
