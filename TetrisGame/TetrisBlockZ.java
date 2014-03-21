@@ -1,65 +1,23 @@
-//TetrisBlock.java
-import info.gridworld.actor.*;
-import info.gridworld.grid.*;
-import java.util.ArrayList;
+import info.gridworld.grid.Location;
+
 import java.awt.Color;
 
-/**
- * TetrisBlock is a type of Bug. It will act in GridWorld by moving down
- * (direction 180) if it can, otherwise it will ask TetrisGame to make a new
- * TetrisBlock for the game.
- */
-public class TetrisBlock extends TetrisBug {
+
+public class TetrisBlockZ extends TetrisBlock{
 
 	/**
-	 * value of the current rotation position {0,1,2 or 3}
+	 * @param args
 	 */
-	protected int rotationPos;
-
-	/**
-	 * blocks will have three TetrisBug objects in it... they will be added in the
-	 * constructor
-	 */
-	protected ArrayList<TetrisBug> blocks;
-	/**
-	 * used as a convenient reference to the Grid
-	 */
-	protected Grid<Actor> gr;
-
-	/**
-	 * default constructor
-	 */
-	public TetrisBlock() {
-		super(Color.blue);
-		rotationPos = 0;
-		gr = TetrisGame.world.getGrid();
-
-		// ==> LAMEST GAME OVER EVER !!! <==
-		// if the Grid does not have room for the TetrisBlock.. GameOver
-		if (gr.get(new Location(0, 5)) != null
-				|| gr.get(new Location(1, 5)) != null) {
-			javax.swing.JOptionPane.showMessageDialog(null, "Score: "
-					+ TetrisGame.score, "GAME OVER!", 0);
-			System.exit(0);
-		}
-		putSelfInGrid(gr, new Location(1, 5));
-
-		blocks = new ArrayList<TetrisBug>();
-		TetrisBug a;
-		// create TetrisBugs for ArrayList blocks and put them in Grid gr
-		a = new TetrisBug(Color.blue);
-		a.putSelfInGrid(gr, new Location(0, 5));
-		blocks.add(a);
-
-		// TetrisBlock subclasses will add two more TetrisBug objects to blocks
-
+	public TetrisBlockZ()
+	{
+		super();
+		TetrisBug b= new TetrisBug(Color.YELLOW);
+		TetrisBug c=new TetrisBug(Color.RED);
+		b.putSelfInGrid(gr, new Location(0,4));
+		c.putSelfInGrid(gr, new Location(1,6));
+		blocks.add(b);
+		blocks.add(c);
 	}
-
-	/**
-	 * TetrisBlock and its TetrisBugs must face down (direction 180) If they can
-	 * move down, they will. Otherwise, it will ask TetrisGame to create a new
-	 * TetrisBlock since this one is stuck at the bottom.
-	 */
 	public void act() {
 		setDirection(180);
 		for (TetrisBug tb : blocks)
@@ -77,11 +35,15 @@ public class TetrisBlock extends TetrisBug {
 	 */
 	public void moveDown() {
 		if (rotationPos == 0) {
+			blocks.get(2).move();
 			move();
+			blocks.get(1).move();
 			blocks.get(0).move();
 		} else if (rotationPos == 1) {
-			blocks.get(0).move();
+			blocks.get(1).move();
+			blocks.get(2).move();
 			move();
+			blocks.get(0).move();
 		}
 	}
 
@@ -91,9 +53,9 @@ public class TetrisBlock extends TetrisBug {
 	 */
 	public boolean canMoveDown() {
 		if (rotationPos == 0)
-			return canMove();
+			return blocks.get(2).canMove() && canMove();
 		else if (rotationPos == 1)
-			return canMove() && blocks.get(0).canMove();
+			return blocks.get(1).canMove();
 		else
 			return true;
 	}
@@ -107,14 +69,18 @@ public class TetrisBlock extends TetrisBug {
 		for (TetrisBug tb : blocks)
 			tb.setDirection(90);
 		if (rotationPos == 0) {
-			if (canMove() && blocks.get(0).canMove()) {
+			if (blocks.get(2).canMove()) {
+				blocks.get(2).move();
 				blocks.get(0).move();
 				move();
+				blocks.get(1).move();
 			}
 		} else if (rotationPos == 1) {
-			if (canMove()) {
-				move();
+			if (blocks.get(0).canMove() && blocks.get(2).canMove()) {
 				blocks.get(0).move();
+				blocks.get(2).move();
+				move();
+				blocks.get(1).move();
 			}
 		}
 	}
@@ -129,15 +95,18 @@ public class TetrisBlock extends TetrisBug {
 		for (TetrisBug tb : blocks)
 			tb.setDirection(270);
 		if (rotationPos == 0) {
-			if (canMove() && blocks.get(0).canMove()) {
+			if (blocks.get(1).canMove()) {
+				blocks.get(1).move();
 				blocks.get(0).move();
 				move();
+				blocks.get(2).move();
 			}
 		} else if (rotationPos == 1) {
-			if (blocks.get(0).canMove()) {
-				blocks.get(0).move();
+			if (canMove() && blocks.get(1).canMove()) {
 				move();
-				
+				blocks.get(1).move();	
+				blocks.get(0).move();
+				blocks.get(2).move();
 			}
 		}
 
@@ -150,25 +119,31 @@ public class TetrisBlock extends TetrisBug {
 	 */
 	public void rotate() {
 		Location nextLoc;
+		Location nextLoc1;
 		if (rotationPos == 0) {
 			// only one block must move
 			nextLoc = new Location(getLocation().getRow() - 1,
 					getLocation().getCol() + 1);
-			if (gr.isValid(nextLoc) && gr.get(nextLoc) == null) {
-				moveTo(nextLoc);
+			nextLoc1 = new Location(getLocation().getRow() + 1,
+					getLocation().getCol());
+			if (gr.isValid(nextLoc) && gr.get(nextLoc) == null && gr.isValid(nextLoc1) && gr.get(nextLoc1) == null ) {
+				blocks.get(0).moveTo(nextLoc);
+				blocks.get(1).moveTo(nextLoc1);
 				rotationPos = (rotationPos + 1) % 2;// will be % 4 with 4 blocks
 			}
 		} else if (rotationPos == 1) {
 
-			nextLoc = new Location(getLocation().getRow()+1,
+			nextLoc = new Location(getLocation().getRow()-1,
+					getLocation().getCol());
+			nextLoc1 = new Location(getLocation().getRow() - 1,
 					getLocation().getCol() - 1);
-			if (gr.isValid(nextLoc) && gr.get(nextLoc) == null) {
-				moveTo(nextLoc);
+			
+			if (gr.isValid(nextLoc) && gr.get(nextLoc) == null && gr.isValid(nextLoc1) && gr.get(nextLoc1) == null ) {
+				blocks.get(0).moveTo(nextLoc);
+				blocks.get(1).moveTo(nextLoc1);
 				rotationPos = (rotationPos + 1) % 2;// will be % 4 with 4 blocks
 			}
-		
-
 	}
-
 }
+
 }
